@@ -1,0 +1,46 @@
+##
+## VM Template for EPGU-VIS Integration
+## Generated automatically
+##
+## This template transforms JSON data from EPGU forms to XML for departmental systems
+##
+## Variable declarations
+## Кто подаёт заявление?-ApplicantQuestion
+#set($applicantQuestion = $request.ApplicantQuestion)
+## Стартовый экран-Start
+#set($start = $request.Start)
+## Как вы хотите получить выплату?-PayQuestion
+#set($payQuestion = $request.PayQuestion)
+## Адрес постоянной рег
+#set($addressReg = $request.AddressReg)
+## Адрес регистрации получателя
+#set($parentAddressReg = $request.ParentAddressReg)
+## Реквизиты актовой записи о разводе-CertificateDeathMother копия
+#set($s14 = $request.s14)
+## <p>С помощью услуги один из членов молодой семьи, являющийся гражданином РФ, проживающий в Калининградской области, может получить разовую выплату при рождении третьего или последующего ребёнка</p><p>Молодая семья — это семья, в которой родители состоят в зарегистрированном браке или родитель <a id="one">единственный</a>. Возраст родителей до 35 лет включительно</p><p>Подать заявление можно на ребёнка младше 6 месяцев, рождённого с 1 января 2025 г. по 31 декабря 2027 г.</p><p>Размер выплаты 300 000 ₽</p>
+#set($startInfo = $request.StartInfo)
+## ValueCalculator1
+#set($valueCalculator1 = $request.ValueCalculator1)
+## ValueCalculator2
+#set($valueCalculator2 = $request.ValueCalculator2)
+## <h5>Вы выбрали</h5><p style='color:#66727F'>Наименование банка</p><p>${NAME}</p><p style='color:#66727F'>БИК</p><p>${BIC}</p><p style='color:#66727F'>Корреспондентский счёт</p><p>${CORR_ACCOUNT}</p>
+#set($c70 = $request.c70)
+## <div class='divider grey'></div><h5>Выбранное отделение</h5><p>${NAME}</p><p class='block--with-icon'> <img src='{staticDomainAssetsPath}/assets/icons/svg/house.svg'> ${ADDRESS}</p><p class='block--with-icon'> <img src='{staticDomainAssetsPath}/assets/icons/svg/Call.svg'>${TELEFON}</p>
+#set($c97 = $request.c97)
+##  <div class='block--with-icon'> <div class='icon-wrapper'><img src='{staticDomainAssetsPath}/assets/icons/svg/house.svg'></div><span><b>${c40.value.originalItem.attributeValues.NAME} 
+</b><br/>${c40.value.originalItem.attributeValues.ADDRESS}</a></span></div>
+ <p style="margin: 0px 0px 0px 37px"></p> <div class='block--with-icon'> <img src='{staticDomainAssetsPath}/assets/icons/svg/clock.svg'> <span>Срок оказания услуги — до 10 рабочих дней</div></span> 
+<h5>Что дальше<span style="font-weight: normal;"></h5><ol class='only-list'>
+${go}
+ <li>Уведомление о назначении меры поддержки придёт в личный кабинет</li>
+<li>${pay}</li>
+${get}
+
+#set($c98 = $request.c98)
+## <h3><center>У получателя услуги нет российского гражданства</center></h3><font color="grey"><center>Услуга доступна только гражданам РФ</center></font>
+#set($c10 = $request.c10)
+## <h3><center>Получатель услуги старше 35 лет</center></h3><font color="grey"><center>Услуга доступна только молодым семьям, в которых возраст родителей до 35 лет включительно</center></font>
+#set($c113 = $request.c113)
+
+## XML output structure
+<OrganizationID></OrganizationID>

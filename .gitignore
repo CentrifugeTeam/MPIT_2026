@@ -1,0 +1,9 @@
+*.env
+__pycache__/
+*.py[cod]
+*$py.class
+node_modules
+yarn.lock
+package-lock.json
+venv/
+*.DS_Store

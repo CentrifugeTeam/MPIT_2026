@@ -1,0 +1,133 @@
+services:
+  # Инфраструктура (локальная, без облачных сервисов)
+  postgres-db:
+    image: postgres:15
+    container_name: postgres-db-local
+    environment:
+      POSTGRES_DB: postgres-db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - postgres_db_data_local:/var/lib/postgresql/data
+    ports:
+      - "5446:5432"
+    networks:
+      - app-network-local
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  postgres-files:
+    image: postgres:15
+    container_name: postgres-files-local
+    environment:
+      POSTGRES_DB: files_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - postgres_files_data_local:/var/lib/postgresql/data
+    ports:
+      - "5447:5432"
+    networks:
+      - app-network-local
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Бэкенд сервисы (без notification-service, email-worker, rabbitmq)
+  bff-service:
+    build:
+      context: ./bff-service
+      dockerfile: Dockerfile
+      target: development
+    container_name: bff-service-local
+    ports:
+      - "8000:8000"
+    environment:
+      - SECRET_KEY=your-secret-key-here-local
+      - ALGORITHM=HS256
+      - BACKEND_LOCAL=true
+      - FILES_SERVICE_URL=http://files-service:8006
+      - PROJECTS_SERVICE_URL=http://projects-service:8004
+      - GENERATOR_SERVICE_URL=http://generator-service:8005
+    volumes:
+      - ./bff-service:/app
+    networks:
+      - app-network-local
+    restart: unless-stopped
+
+  files-service:
+    build:
+      context: ./files-service
+      dockerfile: Dockerfile
+    container_name: files-service-local
+    ports:
+      - "8006:8006"
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@postgres-files:5432/files_db
+      - STORAGE_PATH=/app/storage
+      - MAX_FILE_SIZE=10485760
+    depends_on:
+      postgres-files:
+        condition: service_healthy
+    volumes:
+      - ./files-service:/app
+      - files_storage_local:/app/storage
+    networks:
+      - app-network-local
+    restart: unless-stopped
+
+  projects-service:
+    build:
+      context: ./projects-service
+      dockerfile: Dockerfile
+    container_name: projects-service-local
+    ports:
+      - "8004:8004"
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@postgres-db:5432/postgres-db
+      - FILES_SERVICE_URL=http://files-service:8006
+    depends_on:
+      postgres-db:
+        condition: service_healthy
+    volumes:
+      - ./projects-service:/app
+    networks:
+      - app-network-local
+    restart: unless-stopped
+
+  generator-service:
+    build:
+      context: ./generator-service
+      dockerfile: Dockerfile
+    container_name: generator-service-local
+    ports:
+      - "8005:8005"
+    environment:
+      - SERVICE_NAME=generator-service
+      - LOG_LEVEL=INFO
+      - PROJECTS_SERVICE_URL=http://projects-service:8004
+      - FILES_SERVICE_URL=http://files-service:8006
+      - MIN_CONFIDENCE_SCORE=0.5
+      - AUTO_MAP_THRESHOLD=0.7
+    volumes:
+      - ./generator-service:/app
+    networks:
+      - app-network-local
+    restart: unless-stopped
+
+  # Nginx убран для локального режима - прямое подключение к BFF
+
+volumes:
+  postgres_db_data_local:
+  postgres_files_data_local:
+  files_storage_local:
+
+networks:
+  app-network-local:
+    driver: bridge
+

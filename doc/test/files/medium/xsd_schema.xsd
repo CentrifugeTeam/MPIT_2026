@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="http://minsvyaz.gov.ru/application"
+           xmlns="http://minsvyaz.gov.ru/application"
+           elementFormDefault="qualified">
+
+  <!-- Корневой элемент - Заявление -->
+  <xs:element name="Application">
+    <xs:annotation>
+      <xs:documentation>Заявление на получение услуги</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <!-- Персональные данные заявителя -->
+        <xs:element name="ApplicantInfo">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Surname" type="xs:string"/>
+              <xs:element name="Name" type="xs:string"/>
+              <xs:element name="MiddleName" type="xs:string" minOccurs="0"/>
+              <xs:element name="BirthDate" type="xs:date"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+
+        <!-- Паспортные данные -->
+        <xs:element name="PassportData">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Series" type="xs:string"/>
+              <xs:element name="Number" type="xs:string"/>
+              <xs:element name="IssueDate" type="xs:date"/>
+              <xs:element name="IssuedBy" type="xs:string"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+
+        <!-- Адрес -->
+        <xs:element name="Address">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Region" type="xs:string"/>
+              <xs:element name="City" type="xs:string"/>
+              <xs:element name="Street" type="xs:string"/>
+              <xs:element name="HouseNumber" type="xs:string"/>
+              <xs:element name="ApartmentNumber" type="xs:string" minOccurs="0"/>
+              <xs:element name="PostalCode" type="xs:string"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+
+        <!-- Контактная информация -->
+        <xs:element name="ContactInfo">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Email" type="xs:string"/>
+              <xs:element name="Phone" type="xs:string"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+
+        <!-- Сведения об услуге -->
+        <xs:element name="ServiceInfo">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Type" type="xs:string"/>
+              <xs:element name="RequestDate" type="xs:date"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+</xs:schema>
+

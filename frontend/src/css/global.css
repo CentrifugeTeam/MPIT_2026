@@ -1,0 +1,8 @@
+@import "tailwindcss";
+
+/* Note: Make sure the relative reference is correct */
+/* I assumed when writing the response that they are in the same folder */
+@plugin './hero.ts';
+/* Note: You may need to change the path to fit your project structure */
+@source '../../node_modules/@heroui/theme/dist/**/*.{js,ts,jsx,tsx}';
+@custom-variant dark (&:is(.dark *));

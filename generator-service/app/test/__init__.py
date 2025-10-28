@@ -1,0 +1,4 @@
+"""
+Тесты для generator-service
+"""
+

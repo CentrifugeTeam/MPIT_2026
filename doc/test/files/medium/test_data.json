@@ -1,0 +1,21 @@
+{
+  "applicantLastName": "Петров",
+  "applicantFirstName": "Петр",
+  "applicantMiddleName": "Петрович",
+  "birthDate": "1985-05-20",
+  "passportSeries": "4512",
+  "passportNumber": "123456",
+  "passportIssueDate": "2005-06-15",
+  "passportIssuedBy": "ОУФМС России по Московской области",
+  "region": "Московская область",
+  "city": "Москва",
+  "street": "Ленинский проспект",
+  "house": "123",
+  "apartment": "45",
+  "postalCode": "119991",
+  "contactEmail": "petrov.petr@example.com",
+  "contactPhone": "+7 (916) 555-12-34",
+  "serviceType": "Социальная поддержка граждан",
+  "applicationDate": "2024-01-15"
+}
+

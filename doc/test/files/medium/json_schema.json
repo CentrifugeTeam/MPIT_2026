@@ -1,0 +1,115 @@
+{
+  "version": "1.0",
+  "service_name": "Заявление на получение социальной услуги",
+  "fields": [
+    {
+      "id": "applicantLastName",
+      "label": "Фамилия заявителя",
+      "type": "string",
+      "required": true
+    },
+    {
+      "id": "applicantFirstName",
+      "label": "Имя заявителя",
+      "type": "string",
+      "required": true
+    },
+    {
+      "id": "applicantMiddleName",
+      "label": "Отчество заявителя",
+      "type": "string",
+      "required": false
+    },
+    {
+      "id": "birthDate",
+      "label": "Дата рождения",
+      "type": "date",
+      "required": true
+    },
+    {
+      "id": "passportSeries",
+      "label": "Серия паспорта",
+      "type": "string",
+      "required": true
+    },
+    {
+      "id": "passportNumber",
+      "label": "Номер паспорта",
+      "type": "string",
+      "required": true
+    },
+    {
+      "id": "passportIssueDate",
+      "label": "Дата выдачи паспорта",
+      "type": "date",
+      "required": true
+    },
+    {
+      "id": "passportIssuedBy",
+      "label": "Кем выдан паспорт",
+      "type": "string",
+      "required": true
+    },
+    {
+      "id": "region",
+      "label": "Регион",
+      "type": "string",
+      "required": true
+    },
+    {
+      "id": "city",
+      "label": "Город",
+      "type": "string",
+      "required": true
+    },
+    {
+      "id": "street",
+      "label": "Улица",
+      "type": "string",
+      "required": true
+    },
+    {
+      "id": "house",
+      "label": "Дом",
+      "type": "string",
+      "required": true
+    },
+    {
+      "id": "apartment",
+      "label": "Квартира",
+      "type": "string",
+      "required": false
+    },
+    {
+      "id": "postalCode",
+      "label": "Почтовый индекс",
+      "type": "string",
+      "required": true
+    },
+    {
+      "id": "contactEmail",
+      "label": "Email для связи",
+      "type": "string",
+      "required": true
+    },
+    {
+      "id": "contactPhone",
+      "label": "Телефон для связи",
+      "type": "string",
+      "required": true
+    },
+    {
+      "id": "serviceType",
+      "label": "Тип услуги",
+      "type": "string",
+      "required": true
+    },
+    {
+      "id": "applicationDate",
+      "label": "Дата подачи заявления",
+      "type": "date",
+      "required": true
+    }
+  ]
+}
+

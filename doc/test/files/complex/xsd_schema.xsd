@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="http://nalog.gov.ru/registration"
+           xmlns="http://nalog.gov.ru/registration"
+           elementFormDefault="qualified">
+
+  <!-- Корневой элемент -->
+  <xs:element name="EntrepreneurRegistration">
+    <xs:annotation>
+      <xs:documentation>Заявление на регистрацию индивидуального предпринимателя</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <!-- Персональные данные -->
+        <xs:element name="PersonalData">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="LastName" type="xs:string"/>
+              <xs:element name="FirstName" type="xs:string"/>
+              <xs:element name="MiddleName" type="xs:string" minOccurs="0"/>
+              <xs:element name="Gender" type="xs:string"/>
+              <xs:element name="BirthDate" type="xs:date"/>
+              <xs:element name="BirthPlace" type="xs:string"/>
+              <xs:element name="Citizenship" type="xs:string"/>
+              <xs:element name="TaxNumber" type="xs:string"/>
+              <xs:element name="PensionNumber" type="xs:string"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+
+        <!-- Документ, удостоверяющий личность -->
+        <xs:element name="IdentityDocument">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="DocumentType" type="xs:string"/>
+              <xs:element name="SeriesNumber">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="Series" type="xs:string"/>
+                    <xs:element name="Number" type="xs:string"/>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="IssueDate" type="xs:date"/>
+              <xs:element name="IssuedBy" type="xs:string"/>
+              <xs:element name="DepartmentCode" type="xs:string"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+
+        <!-- Адрес регистрации -->
+        <xs:element name="RegistrationAddress">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Region" type="xs:string"/>
+              <xs:element name="District" type="xs:string" minOccurs="0"/>
+              <xs:element name="City" type="xs:string"/>
+              <xs:element name="Settlement" type="xs:string" minOccurs="0"/>
+              <xs:element name="Street" type="xs:string"/>
+              <xs:element name="House" type="xs:string"/>
+              <xs:element name="Building" type="xs:string" minOccurs="0"/>
+              <xs:element name="Apartment" type="xs:string" minOccurs="0"/>
+              <xs:element name="PostalCode" type="xs:string"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+
+        <!-- Контактная информация -->
+        <xs:element name="Contacts">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Email" type="xs:string"/>
+              <xs:element name="PhoneNumber" type="xs:string"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+
+        <!-- Виды деятельности -->
+        <xs:element name="BusinessActivities">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Activity" maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="OKVEDCode" type="xs:string"/>
+                    <xs:element name="ActivityDescription" type="xs:string"/>
+                    <xs:element name="IsPrimary" type="xs:boolean"/>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+
+        <!-- Система налогообложения -->
+        <xs:element name="TaxationSystem">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="SystemType" type="xs:string"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+
+        <!-- Дата подачи -->
+        <xs:element name="ApplicationDate" type="xs:date"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+</xs:schema>
+

@@ -1,0 +1,199 @@
+{
+  "version": "1.0",
+  "service_name": "Регистрация индивидуального предпринимателя",
+  "fields": [
+    {
+      "id": "surname",
+      "label": "Фамилия",
+      "type": "string",
+      "required": true
+    },
+    {
+      "id": "name",
+      "label": "Имя",
+      "type": "string",
+      "required": true
+    },
+    {
+      "id": "patronymic",
+      "label": "Отчество",
+      "type": "string",
+      "required": false
+    },
+    {
+      "id": "gender",
+      "label": "Пол",
+      "type": "string",
+      "required": true
+    },
+    {
+      "id": "dateOfBirth",
+      "label": "Дата рождения",
+      "type": "date",
+      "required": true
+    },
+    {
+      "id": "placeOfBirth",
+      "label": "Место рождения",
+      "type": "string",
+      "required": true
+    },
+    {
+      "id": "citizenship",
+      "label": "Гражданство",
+      "type": "string",
+      "required": true
+    },
+    {
+      "id": "inn",
+      "label": "ИНН",
+      "type": "string",
+      "required": true
+    },
+    {
+      "id": "snils",
+      "label": "СНИЛС",
+      "type": "string",
+      "required": true
+    },
+    {
+      "id": "passportType",
+      "label": "Тип документа",
+      "type": "string",
+      "required": true
+    },
+    {
+      "id": "passportSerial",
+      "label": "Серия паспорта",
+      "type": "string",
+      "required": true
+    },
+    {
+      "id": "passportNum",
+      "label": "Номер паспорта",
+      "type": "string",
+      "required": true
+    },
+    {
+      "id": "passportDate",
+      "label": "Дата выдачи",
+      "type": "date",
+      "required": true
+    },
+    {
+      "id": "passportIssuer",
+      "label": "Кем выдан",
+      "type": "string",
+      "required": true
+    },
+    {
+      "id": "passportCode",
+      "label": "Код подразделения",
+      "type": "string",
+      "required": true
+    },
+    {
+      "id": "regRegion",
+      "label": "Регион регистрации",
+      "type": "string",
+      "required": true
+    },
+    {
+      "id": "regDistrict",
+      "label": "Район",
+      "type": "string",
+      "required": false
+    },
+    {
+      "id": "regCity",
+      "label": "Город",
+      "type": "string",
+      "required": true
+    },
+    {
+      "id": "regSettlement",
+      "label": "Населенный пункт",
+      "type": "string",
+      "required": false
+    },
+    {
+      "id": "regStreet",
+      "label": "Улица",
+      "type": "string",
+      "required": true
+    },
+    {
+      "id": "regHouse",
+      "label": "Дом",
+      "type": "string",
+      "required": true
+    },
+    {
+      "id": "regBuilding",
+      "label": "Корпус",
+      "type": "string",
+      "required": false
+    },
+    {
+      "id": "regFlat",
+      "label": "Квартира",
+      "type": "string",
+      "required": false
+    },
+    {
+      "id": "regPostalCode",
+      "label": "Индекс",
+      "type": "string",
+      "required": true
+    },
+    {
+      "id": "emailAddr",
+      "label": "Электронная почта",
+      "type": "string",
+      "required": true
+    },
+    {
+      "id": "phoneNum",
+      "label": "Телефон",
+      "type": "string",
+      "required": true
+    },
+    {
+      "id": "activityCode1",
+      "label": "Код ОКВЭД (основной)",
+      "type": "string",
+      "required": true
+    },
+    {
+      "id": "activityName1",
+      "label": "Вид деятельности (основной)",
+      "type": "string",
+      "required": true
+    },
+    {
+      "id": "activityCode2",
+      "label": "Код ОКВЭД (дополнительный)",
+      "type": "string",
+      "required": false
+    },
+    {
+      "id": "activityName2",
+      "label": "Вид деятельности (дополнительный)",
+      "type": "string",
+      "required": false
+    },
+    {
+      "id": "taxSystem",
+      "label": "Система налогообложения",
+      "type": "string",
+      "required": true
+    },
+    {
+      "id": "submissionDate",
+      "label": "Дата подачи заявления",
+      "type": "date",
+      "required": true
+    }
+  ]
+}
+

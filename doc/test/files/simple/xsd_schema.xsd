@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="http://example.gov.ru/person"
+           xmlns="http://example.gov.ru/person"
+           elementFormDefault="qualified">
+
+  <!-- Корневой элемент -->
+  <xs:element name="Person">
+    <xs:annotation>
+      <xs:documentation>Персональные данные гражданина</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="FamilyName" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>Фамилия</xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="GivenName" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>Имя</xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="Patronymic" type="xs:string" minOccurs="0">
+          <xs:annotation>
+            <xs:documentation>Отчество</xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="DateOfBirth" type="xs:date">
+          <xs:annotation>
+            <xs:documentation>Дата рождения</xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="EmailAddress" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>Электронная почта</xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="PhoneNumber" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>Телефон</xs:documentation>
+          </xs:annotation>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+</xs:schema>
+

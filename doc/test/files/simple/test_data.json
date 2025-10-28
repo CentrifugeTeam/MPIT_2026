@@ -1,0 +1,9 @@
+{
+  "lastName": "Иванов",
+  "firstName": "Иван",
+  "middleName": "Иванович",
+  "birthDate": "1990-01-15",
+  "email": "ivanov@example.com",
+  "phone": "+7 (900) 123-45-67"
+}
+

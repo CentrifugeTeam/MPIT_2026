@@ -1,0 +1,122 @@
+{
+  "name": "mpit-front-2025",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Мёрджер Desktop App",
+  "author": {
+    "name": "Nikita",
+    "email": "nikita@example.com"
+  },
+  "type": "module",
+  "homepage": "./",
+  "main": "electron/main.cjs",
+  "scripts": {
+    "dev": "vite",
+    "dev:local": "cross-env VITE_BACKEND_LOCAL=true vite",
+    "build": "tsc -b && vite build",
+    "lint": "eslint .",
+    "preview": "vite preview",
+    "dev:electron": "npx cross-env VITE_BACKEND_LOCAL=false concurrently \"npx cross-env VITE_BACKEND_LOCAL=false yarn dev\" \"wait-on tcp:5173 && npx cross-env VITE_BACKEND_LOCAL=false electron .\"",
+    "dev:electron:local": "concurrently \"npx cross-env VITE_BACKEND_LOCAL=true yarn dev:local\" \"wait-on tcp:5173 && npx cross-env VITE_BACKEND_LOCAL=true electron .\"",
+    "dev:electron:cloud": "npx cross-env VITE_BACKEND_LOCAL=false concurrently \"npx cross-env VITE_BACKEND_LOCAL=false yarn dev\" \"wait-on tcp:5173 && npx cross-env VITE_BACKEND_LOCAL=false electron .\"",
+    "build:electron": "yarn build && electron-builder",
+    "build:electron:all": "yarn build && electron-builder --win --mac --linux"
+  },
+  "dependencies": {
+    "@heroui/accordion": "^2.2.24",
+    "@heroui/button": "^2.2.27",
+    "@heroui/react": "^2.8.5",
+    "@heroui/system": "^2.4.23",
+    "@heroui/theme": "^2.4.23",
+    "@hookform/resolvers": "^5.2.2",
+    "@tanstack/react-query": "^5.90.5",
+    "axios": "^1.12.2",
+    "framer-motion": "^12.23.24",
+    "i18next": "^25.6.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "react-hook-form": "^7.65.0",
+    "react-i18next": "^16.2.0",
+    "react-router-dom": "^7.9.4",
+    "zod": "^4.1.12",
+    "zustand": "^5.0.8"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.36.0",
+    "@tailwindcss/vite": "^4.1.15",
+    "@types/node": "^24.6.0",
+    "@types/react": "^19.1.16",
+    "@types/react-dom": "^19.1.9",
+    "@vitejs/plugin-react": "^5.0.4",
+    "concurrently": "^9.2.1",
+    "cross-env": "^7.0.3",
+    "electron": "^38.4.0",
+    "electron-builder": "^26.0.12",
+    "eslint": "^9.36.0",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-refresh": "^0.4.22",
+    "globals": "^16.4.0",
+    "tailwindcss": "^4.1.15",
+    "typescript": "~5.9.3",
+    "typescript-eslint": "^8.45.0",
+    "vite": "^7.1.7",
+    "vite-plugin-svgr": "^4.5.0",
+    "wait-on": "^9.0.1"
+  },
+  "build": {
+    "appId": "com.company.app",
+    "productName": "мёрджер",
+    "asar": false,
+    "files": [
+      "dist/**/*",
+      "electron/**/*",
+      "!node_modules/**/*"
+    ],
+    "directories": {
+      "buildResources": "assets",
+      "output": "release"
+    },
+    "mac": {
+      "target": [
+        {
+          "target": "dir",
+          "arch": [
+            "arm64"
+          ]
+        }
+      ],
+      "identity": null,
+      "type": "development",
+      "gatekeeperAssess": false,
+      "hardenedRuntime": false,
+      "entitlements": null,
+      "entitlementsInherit": null
+    },
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    },
+    "linux": {
+      "target": [
+        {
+          "target": "AppImage",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "deb",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    }
+  }
+}

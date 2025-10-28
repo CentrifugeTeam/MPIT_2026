@@ -1,0 +1,49 @@
+{
+  "version": "1.0",
+  "service_name": "Регистрация персональных данных",
+  "fields": [
+    {
+      "id": "lastName",
+      "label": "Фамилия",
+      "type": "string",
+      "required": true,
+      "description": "Фамилия гражданина"
+    },
+    {
+      "id": "firstName",
+      "label": "Имя",
+      "type": "string",
+      "required": true,
+      "description": "Имя гражданина"
+    },
+    {
+      "id": "middleName",
+      "label": "Отчество",
+      "type": "string",
+      "required": false,
+      "description": "Отчество гражданина (если имеется)"
+    },
+    {
+      "id": "birthDate",
+      "label": "Дата рождения",
+      "type": "date",
+      "required": true,
+      "description": "Дата рождения в формате DD.MM.YYYY"
+    },
+    {
+      "id": "email",
+      "label": "Электронная почта",
+      "type": "string",
+      "required": true,
+      "description": "Email для связи"
+    },
+    {
+      "id": "phone",
+      "label": "Телефон",
+      "type": "string",
+      "required": true,
+      "description": "Контактный телефон"
+    }
+  ]
+}
+

@@ -1,0 +1,88 @@
+{
+  "auth": {
+    "login": {
+      "title": "Sign In",
+      "subtitle": "Welcome back! Please login to your account.",
+      "emailPlaceholder": "Enter your email",
+      "passwordPlaceholder": "Enter your password",
+      "confirmPasswordPlaceholder": "Confirm your password",
+      "button": "Sign In",
+      "noAccount": "Don't have an account?",
+      "signUp": "Sign Up",
+      "hasAccount": "Already have an account?",
+      "signIn": "Sign In",
+      "errors": {
+        "emailRequired": "Email is required",
+        "emailInvalid": "Please enter a valid email",
+        "passwordRequired": "Password is required",
+        "passwordMin": "Password must be at least 8 characters",
+        "passwordMismatch": "Passwords do not match",
+        "confirmPasswordRequired": "Please confirm your password"
+      }
+    }
+  },
+  "nav": {
+    "home": "Home",
+    "dashboard": "Dashboard",
+    "logout": "Logout"
+  },
+  "home": {
+    "title": "Welcome to Microservices App",
+    "subtitle": "A modern application built with HeroUI and React",
+    "loginButton": "Sign In",
+    "registerButton": "Sign Up",
+    "dashboardButton": "Dashboard"
+  },
+  "errors": {
+    "api": {
+      "title": "Request Error",
+      "networkError": "Network error. Check your internet connection",
+      "serverError": "Server error. Please try again later",
+      "unauthorized": "Authorization required",
+      "forbidden": "Access forbidden",
+      "notFound": "Resource not found",
+      "badRequest": "Bad request",
+      "timeout": "Request timeout",
+      "unknown": "An unknown error occurred",
+      "400": "Bad request",
+      "401": "Authorization required",
+      "403": "Access forbidden",
+      "404": "Resource not found",
+      "409": "Data conflict",
+      "422": "Validation error",
+      "429": "Too many requests. Please try again later",
+      "500": "Internal server error",
+      "502": "Bad gateway",
+      "503": "Service unavailable",
+      "504": "Gateway timeout"
+    },
+    "auth": {
+      "loginFailed": "Login failed",
+      "registerFailed": "Registration failed",
+      "logoutFailed": "Logout failed",
+      "sessionExpired": "Session expired. Please login again"
+    },
+    "projects": {
+      "loadFailed": "Failed to load projects",
+      "createFailed": "Failed to create project",
+      "updateFailed": "Failed to update project",
+      "deleteFailed": "Failed to delete project"
+    },
+    "generic": {
+      "title": "Error",
+      "message": "Something went wrong"
+    }
+  },
+  "success": {
+    "auth": {
+      "login": "Successfully logged in",
+      "register": "Successfully registered",
+      "logout": "Logged out"
+    },
+    "projects": {
+      "created": "Project created",
+      "updated": "Project updated",
+      "deleted": "Project deleted"
+    }
+  }
+}

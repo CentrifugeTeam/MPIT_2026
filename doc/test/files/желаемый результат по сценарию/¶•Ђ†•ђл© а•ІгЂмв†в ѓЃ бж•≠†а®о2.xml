@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--Annotation Запрос на выполнение действий. Можно
+сделать одно из 3-х: направить заявление, отменить заявление, запросить справочник-->
+<!--complex
+content-->
+<soc:AppDataRequest xmlns:xml="http://www.w3.org/XML/1998/namespace"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soc="http://socit.ru/kalin/orders/2.0.0"
+    xmlns:soc1="http://socit.ru/kalin/orders/2.0.0/attachments">
+  <soc:SetRequest>
+    <soc:orderId>4651668187</soc:orderId>
+    <soc:ServiceCode>3900000000173812673</soc:ServiceCode>
+    <soc:ServiceName>Выплата молодой семье при рождении третьего или последующего ребёнка</soc:ServiceName>
+    <soc:SpravID>1</soc:SpravID>
+     <soc:DelegateInfo>2</soc:DelegateInfo> 
+    <!-- Пользовательские данные -->
+                                                
+                <soc:userData>
+      <soc:lastName>Иванов</soc:lastName>
+      <soc:firstName>Иван</soc:firstName>
+            <soc:middleName>Иванович</soc:middleName>
+            <soc:birthDate>1994-10-01</soc:birthDate>
+      <soc:Sex>Ж</soc:Sex>
+      <soc:Snils>000-000-000 00</soc:Snils>
+            <soc:phone>+7 111 111-11-11</soc:phone>
+                  <soc:Email>11@11.ru</soc:Email>
+            <soc:citizenship>РОССИЯ</soc:citizenship>
+      <soc:mrog>город Калининград</soc:mrog>
+    </soc:userData>
+
+                                                                        <!-- Паспортные данные пользователя -->
+    <soc:userDocument>
+      <soc:type>21</soc:type>
+      <soc:series>2143</soc:series>
+      <soc:number>341241</soc:number>
+      <soc:issuedBy>УФМС</soc:issuedBy>
+      <soc:issueDate>2025-10-01</soc:issueDate>
+      <soc:departmentCode>235-235</soc:departmentCode>
+    </soc:userDocument>
+
+    
+    <!-- Представитель заявителя (при наличии) -->
+                                                                          <soc:DeclarantTypePerson>Представитель по доверенности</soc:DeclarantTypePerson>
+      <soc:declarantData>
+        <soc:lastName>Петрова</soc:lastName>
+        <soc:firstName>Ирина</soc:firstName>
+                <soc:middleName>Ивановна</soc:middleName>
+                <soc:birthDate>2004-11-01</soc:birthDate>
+        <soc:Sex>Ж</soc:Sex>
+        <soc:Snils>000-123-321 50</soc:Snils>
+                <soc:phone>+7(911)4665763</soc:phone>
+                        <soc:Email>d.volin@gov39.ru</soc:Email>
+              </soc:declarantData>
+      
+                                    <soc:declarantDocument>
+        <soc:type>21</soc:type>
+        <soc:series>1232</soc:series>
+        <soc:number>333232</soc:number>
+        <soc:issuedBy>УФМС по г. Калининград</soc:issuedBy>
+        <soc:issueDate>2025-09-01</soc:issueDate>
+        <soc:departmentCode>123-213</soc:departmentCode>
+      </soc:declarantDocument>
+    
+    <!-- Список детей -->
+
+      <soc:children>
+          
+                  <soc:child>
+
+        
+          <soc:childData>
+            <soc:lastName>Иванов</soc:lastName>
+            <soc:firstName>Олег</soc:firstName>
+                          <soc:middleName>Иванович</soc:middleName>
+                        <soc:birthDate>2025-10-01</soc:birthDate>
+                         <soc:Sex>М</soc:Sex>
+            
+                          <soc:citizenship>ИНОСТРАННОЕ ГОСУДАРСТВО</soc:citizenship>
+                      </soc:childData>
+          
+          <soc:childDocument>
+                                                                                                                <!--START:[sequence]-->
+            <!--next
+            5 items are in a [sequence] group-->
+            <soc:type>23</soc:type>
+            <!--next
+            1 item is optional (minOccurs = 0)-->
+                            <soc:series>1</soc:series>
+                                        <soc:number>1213213</soc:number>
+                                        <soc:issuedBy>Иностранный орган</soc:issuedBy>
+                                        <soc:issueDate>2025-10-01</soc:issueDate>
+                        <!--END:[sequence]-->
+          </soc:childDocument>
+
+            <!--next
+            1 item is optional (minOccurs = 0)-->
+            <soc:childAdditionally>
+
+<soc:info name="Адрес ребёнка" parent="Адрес ребёнка">Совпадает с адресом получателя услуги</soc:info>
+
+</soc:childAdditionally>
+
+                  </soc:child>
+                    <soc:child>
+
+        
+          <soc:childData>
+            <soc:lastName>Иванов</soc:lastName>
+            <soc:firstName>Петр</soc:firstName>
+                          <soc:middleName>Иванович</soc:middleName>
+                        <soc:birthDate>2010-10-01</soc:birthDate>
+                         <soc:Sex>М</soc:Sex>
+            
+                          <soc:citizenship>РОССИЯ</soc:citizenship>
+                      </soc:childData>
+          
+          <soc:childDocument>
+                                                                                                                <!--START:[sequence]-->
+            <!--next
+            5 items are in a [sequence] group-->
+            <soc:type>106</soc:type>
+            <!--next
+            1 item is optional (minOccurs = 0)-->
+                                        <soc:number>213</soc:number>
+                                        <soc:issuedBy>Бюро ЗАГС г. Светлогорска Управления МВД по Калининградской области</soc:issuedBy>
+                                        <soc:issueDate>2010-10-01</soc:issueDate>
+                        <!--END:[sequence]-->
+          </soc:childDocument>
+
+            <!--next
+            1 item is optional (minOccurs = 0)-->
+            <soc:childAdditionally>
+
+<soc:info name="Адрес ребёнка" parent="Адрес ребёнка">Совпадает с адресом получателя услуги</soc:info>
+
+</soc:childAdditionally>
+
+                  </soc:child>
+                    <soc:child>
+
+        
+          <soc:childData>
+            <soc:lastName>Иванова</soc:lastName>
+            <soc:firstName>Мария</soc:firstName>
+                          <soc:middleName>Ивановна</soc:middleName>
+                        <soc:birthDate>2019-10-02</soc:birthDate>
+                         <soc:Sex>Ж</soc:Sex>
+            
+                          <soc:citizenship>РОССИЯ</soc:citizenship>
+                      </soc:childData>
+          
+          <soc:childDocument>
+                                                                                                                <!--START:[sequence]-->
+            <!--next
+            5 items are in a [sequence] group-->
+            <soc:type>106</soc:type>
+            <!--next
+            1 item is optional (minOccurs = 0)-->
+                                        <soc:number>45</soc:number>
+                                        <soc:issuedBy>Отдел ЗАГС администрации Балтийского района городского округа &quot;Город Калининград&quot;</soc:issuedBy>
+                                        <soc:issueDate>2019-10-02</soc:issueDate>
+                        <!--END:[sequence]-->
+          </soc:childDocument>
+
+            <!--next
+            1 item is optional (minOccurs = 0)-->
+            <soc:childAdditionally>
+
+<soc:info name="Адрес ребёнка" parent="Адрес ребёнка">Совпадает с адресом получателя услуги</soc:info>
+
+</soc:childAdditionally>
+
+                  </soc:child>
+            
+      </soc:children>
+
+    <!-- Супруг получателя услуги -->
+    
+    <!-- Адрес регистрации -->
+    <soc:regAddress>
+              <soc:fiasHouseCode>49734422-3a0a-4ea3-b552-ddfb7b1a2bcb</soc:fiasHouseCode>
+        <soc:index>236022</soc:index>
+        <soc:town>Калининград</soc:town>
+        <soc:street>Уральская</soc:street>
+        <soc:house>2</soc:house>
+                <soc:apartment>1</soc:apartment>
+                <soc:strAddress>обл. Калининградская, г. Калининград, ул. Уральская</soc:strAddress>
+          </soc:regAddress>
+
+    <!-- Временный адрес -->
+          <soc:tempAddress>
+        <soc:fiasHouseCode>95fe1b5d-acd6-42de-a1f1-49283c849312</soc:fiasHouseCode>
+        <soc:index>236017</soc:index>
+        <soc:town>Калининград</soc:town>
+        <soc:street>Ульяновская</soc:street>
+        <soc:house>1</soc:house>
+                <soc:strAddress>обл. Калининградская, г. Калининград, ул. Ульяновская</soc:strAddress>
+      </soc:tempAddress>
+    
+    <!-- Фактический адрес -->
+    
+    <!-- Способ получения выплаты -->
+    <soc:payment>
+      
+                      <soc:PostVariant>TEMP</soc:PostVariant>
+          
+          </soc:payment>
+
+    
+        <!--next
+        1 item is optional (minOccurs = 0)-->
+                <!--complex
+        content-->
+            <soc:AppliedDocuments>
+        <!--next
+        1 item is optional (minOccurs = 0)-->
+                <!--complex
+                content-->
+                                                                                                    <soc:AppliedDocument>
+                            <soc:Name>Тестовый документ.pdf</soc:Name>
+                            <!--<soc:URL>c101.FileUploadComponent.doc.4651668188.pdf</soc:URL>-->
+                            <soc:URL>c101.FileUploadComponent.doc.4651668188</soc:URL>
+                            <!--<soc:typeName>application/pdf</soc:typeName>-->
+                            <soc:typeName>Доверенность</soc:typeName>
+                        </soc:AppliedDocument>
+                                                                                                                                                                                                                                                                                                                                                                                <soc:AppliedDocument>
+                            <soc:Name>Тестовый документ.pdf</soc:Name>
+                            <!--<soc:URL>c94.FileUploadComponent.doc0001.4651668187.pdf</soc:URL>-->
+                            <soc:URL>c94.FileUploadComponent.doc0001.4651668187</soc:URL>
+                            <!--<soc:typeName>application/pdf</soc:typeName>-->
+                            <soc:typeName>Свидетельство о смерти</soc:typeName>
+                        </soc:AppliedDocument>
+                                                                                                                                                                                <soc:AppliedDocument>
+                            <soc:Name>Тестовый документ — копия.pdf</soc:Name>
+                            <!--<soc:URL>c94.FileUploadComponent.doc2.4651668187.pdf</soc:URL>-->
+                            <soc:URL>c94.FileUploadComponent.doc2.4651668187</soc:URL>
+                            <!--<soc:typeName>application/pdf</soc:typeName>-->
+                            <soc:typeName>Нотариально заверенный перевод на русский язык</soc:typeName>
+                        </soc:AppliedDocument>
+                                                                                                                                                                                                                                                                                                                                                                                   <soc:AppliedDocument>
+                            <soc:Name>Тестовый документ.pdf</soc:Name>
+                            <!--<soc:URL>sc38_2800.FileUploadComponent.doc445f838f-dd16-4ab5-b633-8484557ba4b5.4651668187.pdf</soc:URL>-->
+                            <soc:URL>sc38_2800.FileUploadComponent.doc445f838f-dd16-4ab5-b633-8484557ba4b5.4651668187</soc:URL>
+                            <!--<soc:typeName>application/pdf</soc:typeName>-->
+                            <soc:typeName>Свидетельство о рождении</soc:typeName>
+                        </soc:AppliedDocument>
+                                                                               <soc:AppliedDocument>
+                            <soc:Name>Тестовый документ — копия.pdf</soc:Name>
+                            <!--<soc:URL>sc38_2800.FileUploadComponent.doc2445f838f-dd16-4ab5-b633-8484557ba4b5.4651668187.pdf</soc:URL>-->
+                            <soc:URL>sc38_2800.FileUploadComponent.doc2445f838f-dd16-4ab5-b633-8484557ba4b5.4651668187</soc:URL>
+                            <!--<soc:typeName>application/pdf</soc:typeName>-->
+                            <soc:typeName>Свидетельство о рождении</soc:typeName>
+                        </soc:AppliedDocument>
+                                                                                                                                                        </soc:AppliedDocuments>
+        
+<soc:addInfos>
+    <!-- Реквизиты записей актов гражданского состояния -->
+<soc:addInfo>
+    
+    <soc:info name="Причина отсутствия второго родителя ребёнка" parent="Второй родитель">Смерть</soc:info>
+
+
+
+                                    <soc:info name="Отдел ОГКУ «Центр социальной поддержки населения»">ОГКУ ЦСПН Калининград</soc:info>
+                </soc:addInfo>
+</soc:addInfos>    
+  </soc:SetRequest>
+</soc:AppDataRequest>
