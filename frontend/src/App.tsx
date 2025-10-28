@@ -3,7 +3,7 @@ import {
   LoginPage,
   RegisterPage,
   DashboardPage,
-  HomePage,
+  OnboardingPage,
   AllProjectsPage,
   DraftsPage,
   DeletedPage,
@@ -13,11 +13,29 @@ import {
 } from "./pages";
 import ProtectedRoute from "./shared/components/ProtectedRoute";
 import { isLocalMode } from "./shared/config/env";
+import { useCurrentUser } from "./features/auth/hooks";
 
 export default function App() {
+  // Автоматическая загрузка данных пользователя при авторизации
+  useCurrentUser();
+
+  // Проверяем, был ли просмотрен онбординг
+  const isOnboardingCompleted =
+    localStorage.getItem("onboarding_completed") === "true";
+
   return (
     <Routes>
-      <Route path="/" element={<HomePage />} />
+      {/* Главная страница: онбординг или логин/дашборд в зависимости от режима */}
+      <Route
+        path="/"
+        element={
+          isOnboardingCompleted ? (
+            <Navigate to={isLocalMode ? "/dashboard" : "/login"} replace />
+          ) : (
+            <OnboardingPage />
+          )
+        }
+      />
 
       {/* Страницы аутентификации только в облачном режиме */}
       {!isLocalMode && (

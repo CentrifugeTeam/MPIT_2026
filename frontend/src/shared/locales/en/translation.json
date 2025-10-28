@@ -45,7 +45,7 @@
       "timeout": "Request timeout",
       "unknown": "An unknown error occurred",
       "400": "Bad request",
-      "401": "Authorization required",
+      "401": "Incorrect email or password",
       "403": "Access forbidden",
       "404": "Resource not found",
       "409": "Data conflict",

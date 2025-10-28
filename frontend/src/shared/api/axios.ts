@@ -3,16 +3,21 @@ import { useUserStore } from "@/store/userStore";
 import { useToastStore } from "@/shared/hooks/useToast";
 import i18n from "i18next";
 
-const CLOUD_URL = (import.meta.env.VITE_API_BASE_URL ||
-  "https://affectedly-optimistic-turkey.cloudpub.ru") + "/api";
+const CLOUD_URL =
+  (import.meta.env.VITE_API_BASE_URL ||
+    "https://affectedly-optimistic-turkey.cloudpub.ru") + "/api";
 const LOCAL_URL = "http://localhost:8000/api";
 
-let BASE_URL = import.meta.env.VITE_BACKEND_LOCAL === "true" ? LOCAL_URL : CLOUD_URL;
+let BASE_URL =
+  import.meta.env.VITE_BACKEND_LOCAL === "true" ? LOCAL_URL : CLOUD_URL;
 let isUsingLocalFallback = false;
 
 // Debug logs
 console.log("🔧 VITE_BACKEND_LOCAL:", import.meta.env.VITE_BACKEND_LOCAL);
-console.log("🔧 Режим:", import.meta.env.VITE_BACKEND_LOCAL === "true" ? "ЛОКАЛЬНЫЙ" : "ОБЛАЧНЫЙ");
+console.log(
+  "🔧 Режим:",
+  import.meta.env.VITE_BACKEND_LOCAL === "true" ? "ЛОКАЛЬНЫЙ" : "ОБЛАЧНЫЙ"
+);
 console.log("🔧 Первоначальный API URL:", BASE_URL);
 
 const apiClient = axios.create({
@@ -21,7 +26,6 @@ const apiClient = axios.create({
     "Content-Type": "application/json",
   },
 });
-
 
 let isRefreshing = false;
 let failedQueue: Array<{
@@ -69,12 +73,18 @@ const showErrorToast = (error: AxiosError) => {
     return;
   }
 
-  const serverMessage =
-    (error.response?.data as { detail?: string, message?: string })?.detail ||
-    (error.response?.data as { detail?: string, message?: string })?.message;
+  // Для логина всегда используем локализованное сообщение
+  let message: string;
+  if (url.includes("/auth/login") && status === 401) {
+    message = getErrorMessage(status);
+  } else {
+    const serverMessage =
+      (error.response?.data as { detail?: string; message?: string })?.detail ||
+      (error.response?.data as { detail?: string; message?: string })?.message;
+    message = serverMessage || getErrorMessage(status, error.message);
+  }
 
   const title = i18n.t("errors.api.title");
-  const message = serverMessage || getErrorMessage(status, error.message);
 
   addToast({
     type: "error",
@@ -120,9 +130,11 @@ apiClient.interceptors.response.use(
       console.warn("⚠️ Облачный сервер недоступен, пробуем localhost...");
 
       try {
-        const testResponse = await axios.get(`${LOCAL_URL}/health`, {
-          timeout: 3000,
-        }).catch(() => null);
+        const testResponse = await axios
+          .get(`${LOCAL_URL}/health`, {
+            timeout: 3000,
+          })
+          .catch(() => null);
 
         if (testResponse) {
           BASE_URL = LOCAL_URL;
@@ -133,7 +145,8 @@ apiClient.interceptors.response.use(
           addToast({
             type: "info",
             title: i18n.t("common.localMode") || "Локальный режим",
-            message: "Облачный сервер недоступен. Подключение к локальному серверу.",
+            message:
+              "Облачный сервер недоступен. Подключение к локальному серверу.",
             duration: 5000,
           });
 
@@ -155,6 +168,7 @@ apiClient.interceptors.response.use(
       error.response?.status === 401 &&
       !originalRequest._retry &&
       originalRequest.url !== "/auth/refresh" &&
+      originalRequest.url !== "/auth/login" && // Не обрабатываем 401 при логине
       !isLocal // Пропускаем refresh в локальном режиме
     ) {
       if (isRefreshing) {

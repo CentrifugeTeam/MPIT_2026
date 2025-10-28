@@ -6,7 +6,11 @@ import {
   useCreateProjectWithFiles,
 } from "@/features/projects/hooks";
 import { useUploadFile } from "@/features/files/hooks";
-import { getFileTypeByExtension } from "@/features/files/utils/fileUtils";
+import {
+  getFileTypeByExtension,
+  validateFilesForGeneration,
+  getFileExtension,
+} from "@/features/files/utils/fileUtils";
 import {
   FileUploadZone,
   FileList,
@@ -33,23 +37,50 @@ export default function CreateProjectPage() {
   const uploadFileMutation = useUploadFile();
   const createProjectWithFilesMutation = useCreateProjectWithFiles();
 
-  // Валидация
+  // Валидация файлов
+  const successFiles = files.filter((f) => f.status === "success");
+  const fileValidation = validateFilesForGeneration(
+    successFiles.map((f) => f.file.name)
+  );
+
+  // Валидация формы
   const canSaveDraft = projectName.trim().length > 0;
-  const canGenerate =
-    projectName.trim().length > 0 &&
-    files.filter((f) => f.status === "success").length >= 3;
+  const canGenerate = projectName.trim().length > 0 && fileValidation.isValid;
 
   // Обработчик выбора файлов
-  const handleFilesSelected = useCallback((selectedFiles: File[]) => {
-    const newFiles: LocalFile[] = selectedFiles.map((file) => ({
-      id: `${Date.now()}-${Math.random()}`,
-      file,
-      progress: 0,
-      status: "pending",
-    }));
+  const handleFilesSelected = useCallback(
+    (selectedFiles: File[]) => {
+      // Проверяем конфликты с уже загруженными файлами
+      const currentFileNames = files.map((f) => f.file.name);
+      const newFileNames = selectedFiles.map((f) => f.name);
+      const allFileNames = [...currentFileNames, ...newFileNames];
 
-    setFiles((prev) => [...prev, ...newFiles]);
-  }, []);
+      // Проверяем, есть ли и XSD, и XML одновременно
+      const extensions = allFileNames.map(getFileExtension);
+      const hasXsd = extensions.some((ext) => ext === "xsd");
+      const hasXml = extensions.some((ext) => ext === "xml");
+
+      if (hasXsd && hasXml) {
+        addToast({
+          type: "error",
+          title: "Ошибка загрузки",
+          message:
+            "Можно загрузить либо XSD, либо XML файл, но не оба одновременно",
+        });
+        return;
+      }
+
+      const newFiles: LocalFile[] = selectedFiles.map((file) => ({
+        id: `${Date.now()}-${Math.random()}`,
+        file,
+        progress: 0,
+        status: "pending",
+      }));
+
+      setFiles((prev) => [...prev, ...newFiles]);
+    },
+    [files, addToast]
+  );
 
   // Автоматическая загрузка файлов после выбора
   useEffect(() => {
@@ -254,11 +285,28 @@ export default function CreateProjectPage() {
         ) : files.length === 0 ? (
           <FileUploadZone onFilesSelected={handleFilesSelected} />
         ) : (
-          <FileList
-            files={files}
-            onRemove={handleRemoveFile}
-            onAddMore={handleAddMore}
-          />
+          <>
+            <FileList
+              files={files}
+              onRemove={handleRemoveFile}
+              onAddMore={handleAddMore}
+              isAddMoreDisabled={fileValidation.isValid}
+            />
+
+            {/* Ошибки валидации файлов */}
+            {!fileValidation.isValid && successFiles.length > 0 && (
+              <div className="bg-danger-50 border border-danger-200 rounded-xl p-4">
+                <p className="text-sm font-medium text-danger-700 mb-2">
+                  Требования к файлам:
+                </p>
+                <ul className="text-sm text-danger-600 space-y-1">
+                  {fileValidation.errors.map((error, index) => (
+                    <li key={index}>• {error}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </>
         )}
 
         {/* Скрытый input для "Добавить ещё" */}

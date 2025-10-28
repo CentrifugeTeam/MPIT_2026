@@ -67,7 +67,7 @@ function createWindow() {
     }
   });
 
-  if (isDev && !isLocalMode) {
+  if (isDev) { //  && !isLocalMode
     win.webContents.openDevTools();
   }
 

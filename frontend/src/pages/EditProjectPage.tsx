@@ -3,7 +3,6 @@ import { Input, Textarea, Button } from "@heroui/react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   useGetProjectById,
-  useUpdateProject,
   useCreateProjectWithFiles,
 } from "@/features/projects/hooks";
 import {
@@ -16,7 +15,11 @@ import {
   FileList,
   GenerationProgress,
 } from "@/features/files/components";
-import { getFileTypeByExtension } from "@/features/files/utils/fileUtils";
+import {
+  getFileTypeByExtension,
+  validateFilesForGeneration,
+  getFileExtension,
+} from "@/features/files/utils/fileUtils";
 import type { LocalFile } from "@/features/files/types/files.types";
 import { useToastStore } from "@/shared/hooks/useToast";
 
@@ -43,22 +46,15 @@ export default function EditProjectPage() {
     useState<GenerationState>("idle");
 
   // Мутации
-  const updateProjectMutation = useUpdateProject();
   const uploadFileMutation = useUploadFile();
   const deleteFileMutation = useDeleteFile(projectId || "");
   const createProjectWithFilesMutation = useCreateProjectWithFiles();
-
-  // Исходные данные для отслеживания изменений
-  const [initialName, setInitialName] = useState("");
-  const [initialDescription, setInitialDescription] = useState("");
 
   // Загружаем данные проекта в форму
   useEffect(() => {
     if (project) {
       setProjectName(project.name);
       setProjectDescription(project.description);
-      setInitialName(project.name);
-      setInitialDescription(project.description);
     }
   }, [project]);
 
@@ -83,25 +79,49 @@ export default function EditProjectPage() {
     }
   }, [projectFiles]);
 
-  // Валидация
-  const hasChanges =
-    projectName !== initialName || projectDescription !== initialDescription;
-  const canSave = projectName.trim().length > 0 && hasChanges;
-  const canGenerate =
-    projectName.trim().length > 0 &&
-    files.filter((f) => f.status === "success").length >= 3;
+  // Валидация файлов
+  const successFiles = files.filter((f) => f.status === "success");
+  const fileValidation = validateFilesForGeneration(
+    successFiles.map((f) => f.file.name)
+  );
+
+  // Валидация формы
+  const canGenerate = projectName.trim().length > 0 && fileValidation.isValid;
 
   // Обработчик выбора файлов
-  const handleFilesSelected = useCallback((selectedFiles: File[]) => {
-    const newFiles: LocalFile[] = selectedFiles.map((file) => ({
-      id: `${Date.now()}-${Math.random()}`,
-      file,
-      progress: 0,
-      status: "pending",
-    }));
+  const handleFilesSelected = useCallback(
+    (selectedFiles: File[]) => {
+      // Проверяем конфликты с уже загруженными файлами
+      const currentFileNames = files.map((f) => f.file.name);
+      const newFileNames = selectedFiles.map((f) => f.name);
+      const allFileNames = [...currentFileNames, ...newFileNames];
 
-    setFiles((prev) => [...prev, ...newFiles]);
-  }, []);
+      // Проверяем, есть ли и XSD, и XML одновременно
+      const extensions = allFileNames.map(getFileExtension);
+      const hasXsd = extensions.some((ext) => ext === "xsd");
+      const hasXml = extensions.some((ext) => ext === "xml");
+
+      if (hasXsd && hasXml) {
+        addToast({
+          type: "error",
+          title: "Ошибка загрузки",
+          message:
+            "Можно загрузить либо XSD, либо XML файл, но не оба одновременно",
+        });
+        return;
+      }
+
+      const newFiles: LocalFile[] = selectedFiles.map((file) => ({
+        id: `${Date.now()}-${Math.random()}`,
+        file,
+        progress: 0,
+        status: "pending",
+      }));
+
+      setFiles((prev) => [...prev, ...newFiles]);
+    },
+    [files, addToast]
+  );
 
   // Автоматическая загрузка новых файлов
   useEffect(() => {
@@ -177,53 +197,6 @@ export default function EditProjectPage() {
   const handleAddMore = useCallback(() => {
     document.getElementById("file-input-add-more")?.click();
   }, []);
-
-  // Сохранение изменений
-  const handleSave = useCallback(async () => {
-    if (!canSave || !projectId) return;
-
-    try {
-      // Отправляем только измененные поля
-      const updateData: { name?: string; description?: string } = {};
-
-      if (projectName !== initialName) {
-        updateData.name = projectName;
-      }
-
-      if (projectDescription !== initialDescription) {
-        updateData.description = projectDescription;
-      }
-
-      await updateProjectMutation.mutateAsync({
-        projectId,
-        data: updateData,
-      });
-
-      addToast({
-        type: "success",
-        title: "Проект обновлен",
-        message: "Изменения успешно сохранены",
-      });
-
-      // Обновляем исходные значения
-      setInitialName(projectName);
-      setInitialDescription(projectDescription);
-
-      navigate("/dashboard/all");
-    } catch (error) {
-      console.error("Error updating project:", error);
-    }
-  }, [
-    canSave,
-    projectId,
-    projectName,
-    projectDescription,
-    initialName,
-    initialDescription,
-    updateProjectMutation,
-    addToast,
-    navigate,
-  ]);
 
   // Генерация
   const handleGenerate = useCallback(async () => {
@@ -325,16 +298,6 @@ export default function EditProjectPage() {
             Отмена
           </Button>
           <Button
-            variant="bordered"
-            color="default"
-            size="lg"
-            isDisabled={!canSave}
-            onPress={handleSave}
-            isLoading={updateProjectMutation.isPending}
-          >
-            Сохранить
-          </Button>
-          <Button
             color="primary"
             variant="solid"
             size="lg"
@@ -383,11 +346,28 @@ export default function EditProjectPage() {
         ) : files.length === 0 ? (
           <FileUploadZone onFilesSelected={handleFilesSelected} />
         ) : (
-          <FileList
-            files={files}
-            onRemove={handleRemoveFile}
-            onAddMore={handleAddMore}
-          />
+          <>
+            <FileList
+              files={files}
+              onRemove={handleRemoveFile}
+              onAddMore={handleAddMore}
+              isAddMoreDisabled={fileValidation.isValid}
+            />
+
+            {/* Ошибки валидации файлов */}
+            {!fileValidation.isValid && successFiles.length > 0 && (
+              <div className="bg-danger-50 border border-danger-200 rounded-xl p-4">
+                <p className="text-sm font-medium text-danger-700 mb-2">
+                  Требования к файлам:
+                </p>
+                <ul className="text-sm text-danger-600 space-y-1">
+                  {fileValidation.errors.map((error, index) => (
+                    <li key={index}>• {error}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </>
         )}
 
         {/* Скрытый input для "Добавить ещё" */}

@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { getCurrentUser } from "../api/authApi";
 import { useUserStore } from "@/store/userStore";
+import { isLocalMode } from "@/shared/config/env";
 import type { UserResponse } from "../types/auth.types";
 
 export const useCurrentUser = () => {
@@ -10,7 +11,9 @@ export const useCurrentUser = () => {
   const query = useQuery<UserResponse, Error>({
     queryKey: ["auth", "currentUser"],
     queryFn: getCurrentUser,
-    enabled: isAuthenticated, // Запрос выполняется только если пользователь авторизован
+    // Запрос выполняется только если пользователь авторизован И не в локальном режиме
+    // В локальном режиме пользователь уже инициализирован в main.tsx
+    enabled: isAuthenticated && !isLocalMode,
   });
 
   useEffect(() => {
