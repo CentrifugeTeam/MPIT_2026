@@ -40,10 +40,7 @@ services:
 
   # Бэкенд сервисы (без notification-service, email-worker, rabbitmq)
   bff-service:
-    build:
-      context: ./bff-service
-      dockerfile: Dockerfile
-      target: development
+    image: bff-service:local
     container_name: bff-service-local
     ports:
       - "8000:8000"
@@ -61,9 +58,7 @@ services:
     restart: unless-stopped
 
   files-service:
-    build:
-      context: ./files-service
-      dockerfile: Dockerfile
+    image: files-service:local
     container_name: files-service-local
     ports:
       - "8006:8006"
@@ -82,9 +77,7 @@ services:
     restart: unless-stopped
 
   projects-service:
-    build:
-      context: ./projects-service
-      dockerfile: Dockerfile
+    image: projects-service:local
     container_name: projects-service-local
     ports:
       - "8004:8004"
@@ -101,9 +94,7 @@ services:
     restart: unless-stopped
 
   generator-service:
-    build:
-      context: ./generator-service
-      dockerfile: Dockerfile
+    image: generator-service:local
     container_name: generator-service-local
     ports:
       - "8005:8005"
@@ -130,4 +121,3 @@ volumes:
 networks:
   app-network-local:
     driver: bridge
-

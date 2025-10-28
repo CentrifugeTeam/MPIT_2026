@@ -27,10 +27,43 @@ async def create_project(
     project: ProjectCreate,
     current_user: dict = Depends(get_current_user)
 ):
-    """Создать новый проект"""
+    """Создать новый проект (с автоматическим версионированием если название существует)"""
+    import re
+
     user_email = current_user.get("email")
+
+    # Проверяем существующие проекты с таким названием и добавляем версию
+    all_projects = await projects_service.get_projects(limit=250)
+    existing_projects = all_projects.get("projects", [])
+
+    # Базовое имя без версии
+    base_name = re.sub(r'\s+\(версия\s+\d+\)$', '', project.name)
+
+    # Находим все проекты с похожим названием
+    matching_projects = []
+    for proj in existing_projects:
+        proj_name = proj.get("name", "")
+        # Проверяем точное совпадение или с версией
+        if proj_name == base_name or re.match(rf'^{re.escape(base_name)}\s+\(версия\s+\d+\)$', proj_name):
+            matching_projects.append(proj_name)
+
+    # Если есть совпадения - добавляем версию
+    project_name = project.name
+    if matching_projects:
+        max_version = 1  # Если есть проект без версии, начинаем с версии 2
+
+        for proj_name in matching_projects:
+            # Ищем версию в названии
+            version_match = re.search(r'\(версия\s+(\d+)\)$', proj_name)
+            if version_match:
+                version = int(version_match.group(1))
+                max_version = max(max_version, version)
+
+        # Формируем новое название с версией
+        project_name = f"{base_name} (версия {max_version + 1})"
+
     result = await projects_service.create_project(
-        name=project.name,
+        name=project_name,
         description=project.description,
         created_by=user_email
     )
@@ -201,17 +234,19 @@ async def create_full_project(
     Создать проект с файлами и опционально сгенерировать VM шаблон
 
     Полный цикл в одном запросе:
-    1. Создаёт проект
+    1. Создаёт проект (с автоматическим версионированием если название существует)
     2. Загружает файлы
     3. Опционально генерирует VM шаблон (если generate=true)
 
-    - **name**: Название проекта
+    - **name**: Название проекта (если уже существует, добавится v2, v3 и т.д.)
     - **description**: Описание проекта (опционально)
     - **files**: Список файлов для загрузки
     - **file_types**: Типы файлов через запятую, например: "JSON_SCHEMA,XSD_SCHEMA,TEST_DATA"
     - **generate**: Запустить генерацию VM шаблона сразу (по умолчанию false)
     """
     try:
+        import re
+
         user_email = current_user.get("email")
         user_uuid = current_user.get("uuid")
 
@@ -222,6 +257,36 @@ async def create_full_project(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail=f"Number of files ({len(files)}) must match number of file_types ({len(file_types_list)})"
             )
+
+        # Проверяем существующие проекты с таким названием и добавляем версию
+        all_projects = await projects_service.get_projects(limit=250)
+        existing_projects = all_projects.get("projects", [])
+
+        # Базовое имя без версии
+        base_name = re.sub(r'\s+\(версия\s+\d+\)$', '', name)
+
+        # Находим все проекты с похожим названием
+        matching_projects = []
+        for proj in existing_projects:
+            proj_name = proj.get("name", "")
+            # Проверяем точное совпадение или с версией
+            if proj_name == base_name or re.match(rf'^{re.escape(base_name)}\s+\(версия\s+\d+\)$', proj_name):
+                matching_projects.append(proj_name)
+
+        # Если есть совпадения - добавляем версию
+        if matching_projects:
+            max_version = 1  # Если есть проект без версии, начинаем с версии 2
+
+            for proj_name in matching_projects:
+                # Ищем версию в названии
+                version_match = re.search(r'\(версия\s+(\d+)\)$', proj_name)
+                if version_match:
+                    version = int(version_match.group(1))
+                    max_version = max(max_version, version)
+
+            # Формируем новое название с версией
+            name = f"{base_name} (версия {max_version + 1})"
+
 
         project = await projects_service.create_project(
             name=name,

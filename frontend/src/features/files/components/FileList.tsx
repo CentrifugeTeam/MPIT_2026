@@ -6,6 +6,7 @@ interface FileListProps {
   files: LocalFile[];
   onRemove: (fileId: string) => void;
   onAddMore: () => void;
+  isAddMoreDisabled?: boolean;
 }
 
 const formatFileSize = (bytes: number): string => {
@@ -64,6 +65,7 @@ export default function FileList({
   files,
   onRemove,
   onAddMore,
+  isAddMoreDisabled = false,
 }: FileListProps) {
   return (
     <div className="space-y-4">
@@ -72,7 +74,12 @@ export default function FileList({
         <h3 className="text-lg font-semibold text-foreground">
           Загруженные файлы
         </h3>
-        <Button color="primary" variant="solid" onPress={onAddMore}>
+        <Button
+          color="primary"
+          variant="solid"
+          onPress={onAddMore}
+          isDisabled={isAddMoreDisabled}
+        >
           Добавить ещё
         </Button>
       </div>

@@ -9,7 +9,7 @@ export const queryClient = new QueryClient({
       refetchOnReconnect: true, // Обновлять при восстановлении соединения
     },
     mutations: {
-      retry: 1, // Повторять мутацию 1 раз при ошибке
+      retry: false, // НЕ повторять мутации - пользователь сам решит повторить
     },
   },
 });

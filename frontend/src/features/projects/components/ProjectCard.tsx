@@ -1,10 +1,18 @@
-import { Button } from "@heroui/button";
+import {
+  Button,
+  Dropdown,
+  DropdownTrigger,
+  DropdownMenu,
+  DropdownItem,
+} from "@heroui/react";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import FileIcon from "@/shared/assets/file.svg";
+import FileIcon from "@/shared/assets/file-icon.svg";
 import DownloadIcon from "@/shared/assets/download.svg";
+import DeleteIcon from "@/shared/assets/delete.svg";
 import type { Project } from "../types/projects.types";
 import { useGetProjectFiles } from "@/features/files/hooks";
+import { useDeleteProject } from "../hooks";
 import { downloadFile } from "@/features/files/api/filesApi";
 import { useToastStore } from "@/shared/hooks/useToast";
 
@@ -63,6 +71,10 @@ export default function ProjectCard({ project }: ProjectCardProps) {
   const navigate = useNavigate();
   const addToast = useToastStore((state) => state.addToast);
   const [isDownloading, setIsDownloading] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  // Хук для удаления проекта
+  const deleteProjectMutation = useDeleteProject();
 
   // Загружаем файлы проекта только когда статус COMPLETED
   const { data: projectFiles } = useGetProjectFiles(
@@ -117,14 +129,16 @@ export default function ProjectCard({ project }: ProjectCardProps) {
       className="flex items-center gap-4 p-4 bg-foreground-100 rounded-2xl border border-default-100 hover:border-default-200 transition-colors relative cursor-pointer"
     >
       {/* Иконка файла */}
-      <div className="shrink-0 w-14 h-14 bg-primary-50 rounded-xl flex items-center justify-center">
+      <div className="shrink-0 w-14 h-14 bg-primary-100 rounded-xl flex items-center justify-center">
         <img src={FileIcon} alt="" className="w-7 h-7" />
       </div>
 
       {/* Информация о проекте */}
       <div className="flex-1 min-w-0">
         <h3 className="text-base font-medium text-foreground truncate">
-          {project.name}
+          {project.name.length > 35
+            ? `${project.name.substring(0, 35)}...`
+            : project.name}
         </h3>
         <p className="text-sm text-default-500 truncate">
           {project.description && project.description.length > 30
@@ -170,26 +184,46 @@ export default function ProjectCard({ project }: ProjectCardProps) {
           <img
             src={DownloadIcon}
             alt="Скачать"
-            className={`w-6 h-6 ${project.status !== "COMPLETED" ? "opacity-40" : ""}`}
+            className={`w-6 h-6 ${
+              project.status !== "COMPLETED" ? "opacity-40" : ""
+            }`}
           />
         </Button>
       </div>
 
       {/* Кнопка меню */}
       <div onClick={(e) => e.stopPropagation()}>
-        <Button
-          isIconOnly
-          variant="light"
-          className="shrink-0"
-          size="sm"
-          onPress={() => {
-            // TODO: открыть меню
-          }}
-        >
-          <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-            <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
-          </svg>
-        </Button>
+        <Dropdown isOpen={isMenuOpen} onOpenChange={setIsMenuOpen}>
+          <DropdownTrigger>
+            <Button isIconOnly variant="light" className="shrink-0" size="sm">
+              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
+              </svg>
+            </Button>
+          </DropdownTrigger>
+          <DropdownMenu
+            onAction={(key) => {
+              if (key === "delete") {
+                deleteProjectMutation.mutate(project.id, {
+                  onSuccess: () => {
+                    setIsMenuOpen(false);
+                  },
+                });
+              }
+            }}
+          >
+            <DropdownItem
+              key="delete"
+              className="text-danger"
+              color="danger"
+              startContent={
+                <img src={DeleteIcon} alt="Удалить" className="w-5 h-5" />
+              }
+            >
+              Удалить
+            </DropdownItem>
+          </DropdownMenu>
+        </Dropdown>
       </div>
     </div>
   );

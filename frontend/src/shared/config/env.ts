@@ -9,7 +9,7 @@ export const LOCAL_CONFIG = {
 
   // Локальный пользователь
   LOCAL_USER: {
-    uuid: 'local-user-uuid',
+    uuid: '00000000-0000-0000-0000-000000000001',
     email: 'local@user.com',
     role: 'ADMIN' as const,
     name: 'Локальный пользователь',

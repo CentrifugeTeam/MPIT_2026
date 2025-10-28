@@ -20,7 +20,7 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(s
         return {
             "email": "local@user.com",
             "role": "ADMIN",
-            "uuid": "local-user-uuid"
+            "uuid": "00000000-0000-0000-0000-000000000001"
         }
 
     try:

@@ -8,11 +8,12 @@ import {
   ModalBody,
   ModalFooter,
 } from "@heroui/react";
-import { useGetProjectById } from "@/features/projects/hooks";
+import { useGetProjectById, useDeleteProject } from "@/features/projects/hooks";
 import { useGetProjectFiles } from "@/features/files/hooks";
 import { GenerationSuccess } from "@/features/files/components";
 import { downloadFile } from "@/features/files/api/filesApi";
 import { useToastStore } from "@/shared/hooks/useToast";
+import DeleteIcon from "@/shared/assets/delete.svg";
 
 export default function ProjectViewPage() {
   const { projectId } = useParams<{ projectId: string }>();
@@ -21,6 +22,10 @@ export default function ProjectViewPage() {
   const addToast = useToastStore((state) => state.addToast);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+
+  // Хук для удаления проекта
+  const deleteProjectMutation = useDeleteProject();
 
   // Загрузка данных проекта
   const {
@@ -39,15 +44,6 @@ export default function ProjectViewPage() {
     const stateFileName = location.state?.generatedFileName as
       | string
       | undefined;
-
-    if (stateFileId) {
-      return {
-        templateFileId: stateFileId,
-        generatedFileName: stateFileName || "generated_template.vm",
-        templateContent: undefined,
-      };
-    }
-
     // Если state пустой, ищем VM_TEMPLATE файл среди файлов проекта
     if (projectFiles?.files) {
       const vmTemplateFile = projectFiles.files.find(
@@ -61,6 +57,15 @@ export default function ProjectViewPage() {
           templateContent: vmTemplateFile.template,
         };
       }
+    }
+
+    // Если файл не найден в списке, но есть в state (крайний случай)
+    if (stateFileId) {
+      return {
+        templateFileId: stateFileId,
+        generatedFileName: stateFileName || "generated_template.vm",
+        templateContent: undefined,
+      };
     }
 
     return {
@@ -122,6 +127,18 @@ export default function ProjectViewPage() {
     }
   }, [templateContent, addToast]);
 
+  // Удалить проект
+  const handleDeleteProject = useCallback(() => {
+    if (!projectId) return;
+
+    deleteProjectMutation.mutate(projectId, {
+      onSuccess: () => {
+        setIsDeleteModalOpen(false);
+        navigate("/dashboard/all");
+      },
+    });
+  }, [projectId, deleteProjectMutation, navigate]);
+
   if (projectLoading) {
     return (
       <div className="flex-1 flex items-center justify-center">
@@ -155,13 +172,24 @@ export default function ProjectViewPage() {
       {/* Заголовок */}
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl leading-8 font-semibold">{project.name}</h1>
-        <Button
-          variant="light"
-          color="default"
-          onPress={() => navigate(`/dashboard/projects/${projectId}/edit`)}
-        >
-          Редактировать проект
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="light"
+            color="default"
+            onPress={() => navigate(`/dashboard/projects/${projectId}/edit`)}
+          >
+            Редактировать проект
+          </Button>
+          <Button
+            isIconOnly
+            variant="bordered"
+            color="danger"
+            onPress={() => setIsDeleteModalOpen(true)}
+            className="w-10 h-10 min-w-10"
+          >
+            <img src={DeleteIcon} alt="Удалить проект" className="w-5 h-5" />
+          </Button>
+        </div>
       </div>
 
       {/* Описание проекта */}
@@ -216,6 +244,44 @@ export default function ProjectViewPage() {
             </Button>
             <Button color="primary" onPress={handleDownload}>
               Скачать файл
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+
+      {/* Модальное окно подтверждения удаления */}
+      <Modal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        size="sm"
+        classNames={{
+          closeButton: "text-2xl w-10 h-10 right-4 top-4",
+        }}
+      >
+        <ModalContent className="rounded-3xl">
+          <ModalHeader className="flex flex-col gap-1">
+            Удалить проект?
+          </ModalHeader>
+          <ModalBody>
+            <p className="text-default-600">
+              Вы уверены, что хотите удалить проект "{project.name}"? Это
+              действие нельзя будет отменить.
+            </p>
+          </ModalBody>
+          <ModalFooter>
+            <Button
+              color="default"
+              variant="light"
+              onPress={() => setIsDeleteModalOpen(false)}
+            >
+              Отмена
+            </Button>
+            <Button
+              color="danger"
+              onPress={handleDeleteProject}
+              isLoading={deleteProjectMutation.isPending}
+            >
+              Удалить
             </Button>
           </ModalFooter>
         </ModalContent>

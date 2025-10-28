@@ -140,7 +140,7 @@ export default function FileUploadZone({
           Загрузите ваши файлы
         </p>
         <p className="text-sm text-default-500">
-          JSON, TXT, XML и XSD форматы, до 50MB
+          1 файл JSON + (XSD или XML), до 50MB каждый
         </p>
       </div>
 
