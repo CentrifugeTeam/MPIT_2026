@@ -94,3 +94,25 @@ export interface CreateProjectWithFilesResponse {
     };
   };
 }
+
+// Маппинг полей
+export interface Mapping {
+  id: string;
+  project_id: string;
+  json_field_id: string;
+  json_field_path: string;
+  json_field_label: string;
+  xml_element_name: string;
+  xml_element_path: string;
+  variable_name: string;
+  is_auto_mapped: boolean;
+  confidence_score: number;
+  created_at: string;
+  updated_at: string | null;
+}
+
+// Ответ со списком маппингов
+export interface MappingsListResponse {
+  mappings: Mapping[];
+  total: number;
+}

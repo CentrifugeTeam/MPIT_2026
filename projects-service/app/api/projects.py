@@ -267,13 +267,12 @@ async def update_project(
     """Обновить проект"""
     try:
         project_uuid = UUID(project_id)
-        user_uuid = UUID(user_id) if user_id else None
 
         db_project = crud.update_project(
             db=db,
             project_id=project_uuid,
             project_update=project_update,
-            user_id=user_uuid
+            user_id=user_id  # user_id уже строка (email), не нужно конвертировать в UUID
         )
 
         if not db_project:

@@ -89,3 +89,81 @@ export const validateFilesForGeneration = (
     errors,
   };
 };
+
+/**
+ * Интерфейс для представления файла в сравнении
+ */
+export interface FileForComparison {
+  name: string;
+  type: FileType;
+  serverFileId?: string; // ID файла на сервере (если есть)
+}
+
+/**
+ * Сравнивает два набора файлов и определяет, есть ли изменения
+ * Учитывает не только добавление/удаление, но и замену файлов с похожими названиями
+ */
+export const compareFileSets = (
+  originalFiles: FileForComparison[],
+  currentFiles: FileForComparison[]
+): boolean => {
+  // Если количество файлов изменилось - точно есть изменения
+  if (originalFiles.length !== currentFiles.length) {
+    return true;
+  }
+
+  // Группируем файлы по типам для сравнения
+  const groupByType = (files: FileForComparison[]) => {
+    const grouped: Record<FileType, FileForComparison[]> = {
+      JSON_SCHEMA: [],
+      XSD_SCHEMA: [],
+      TEST_DATA: [],
+      VM_TEMPLATE: []
+    };
+    
+    files.forEach(file => {
+      grouped[file.type].push(file);
+    });
+    
+    return grouped;
+  };
+
+  const originalGrouped = groupByType(originalFiles);
+  const currentGrouped = groupByType(currentFiles);
+
+  // Сравниваем каждый тип файлов
+  for (const fileType of Object.keys(originalGrouped) as FileType[]) {
+    const originalTypeFiles = originalGrouped[fileType];
+    const currentTypeFiles = currentGrouped[fileType];
+
+    // Если количество файлов типа изменилось
+    if (originalTypeFiles.length !== currentTypeFiles.length) {
+      return true;
+    }
+
+    // Для каждого типа сравниваем файлы
+    if (fileType === "JSON_SCHEMA" || fileType === "XSD_SCHEMA") {
+      // Для JSON и XSD файлов должно быть ровно по одному
+      if (originalTypeFiles.length > 0 && currentTypeFiles.length > 0) {
+        const originalFile = originalTypeFiles[0];
+        const currentFile = currentTypeFiles[0];
+        
+        // Если файл заменился (разные serverFileId или разные названия)
+        if (originalFile.serverFileId !== currentFile.serverFileId || 
+            originalFile.name !== currentFile.name) {
+          return true;
+        }
+      }
+    } else {
+      // Для TEST_DATA файлов сравниваем по названиям
+      const originalNames = originalTypeFiles.map(f => f.name).sort();
+      const currentNames = currentTypeFiles.map(f => f.name).sort();
+      
+      if (JSON.stringify(originalNames) !== JSON.stringify(currentNames)) {
+        return true;
+      }
+    }
+  }
+
+  return false;
+};

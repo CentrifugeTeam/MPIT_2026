@@ -4,6 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import {
   useGetProjectById,
   useCreateProjectWithFiles,
+  useUpdateProject,
 } from "@/features/projects/hooks";
 import {
   useUploadFile,
@@ -19,6 +20,8 @@ import {
   getFileTypeByExtension,
   validateFilesForGeneration,
   getFileExtension,
+  compareFileSets,
+  type FileForComparison,
 } from "@/features/files/utils/fileUtils";
 import type { LocalFile } from "@/features/files/types/files.types";
 import { useToastStore } from "@/shared/hooks/useToast";
@@ -42,13 +45,17 @@ export default function EditProjectPage() {
   const [projectName, setProjectName] = useState("");
   const [projectDescription, setProjectDescription] = useState("");
   const [files, setFiles] = useState<LocalFile[]>([]);
+  const [originalFiles, setOriginalFiles] = useState<FileForComparison[]>([]);
   const [generationState, setGenerationState] =
     useState<GenerationState>("idle");
+  const [hasFileChanges, setHasFileChanges] = useState(false);
+  const [hasMetadataChanges, setHasMetadataChanges] = useState(false);
 
   // Мутации
   const uploadFileMutation = useUploadFile();
   const deleteFileMutation = useDeleteFile(projectId || "");
   const createProjectWithFilesMutation = useCreateProjectWithFiles();
+  const updateProjectMutation = useUpdateProject();
 
   // Загружаем данные проекта в форму
   useEffect(() => {
@@ -57,6 +64,17 @@ export default function EditProjectPage() {
       setProjectDescription(project.description);
     }
   }, [project]);
+
+  // Обработчики изменений названия и описания
+  const handleNameChange = useCallback((value: string) => {
+    setProjectName(value);
+    setHasMetadataChanges(true);
+  }, []);
+
+  const handleDescriptionChange = useCallback((value: string) => {
+    setProjectDescription(value);
+    setHasMetadataChanges(true);
+  }, []);
 
   // Преобразуем файлы с сервера в LocalFile для отображения
   useEffect(() => {
@@ -71,6 +89,15 @@ export default function EditProjectPage() {
           status: "success",
           serverFileId: file.id,
         }));
+
+      // Сохраняем оригинальные файлы для сравнения
+      const originalFilesForComparison: FileForComparison[] = serverFiles.map(file => ({
+        name: file.file.name,
+        type: getFileTypeByExtension(file.file.name),
+        serverFileId: file.serverFileId,
+      }));
+      setOriginalFiles(originalFilesForComparison);
+
       setFiles((prev) => {
         // Объединяем серверные файлы с локальными (новыми)
         const localFiles = prev.filter((f) => !f.serverFileId);
@@ -85,8 +112,24 @@ export default function EditProjectPage() {
     successFiles.map((f) => f.file.name)
   );
 
+  // Автоматическая проверка изменений файлов
+  useEffect(() => {
+    if (originalFiles.length > 0) {
+      const currentFiles: FileForComparison[] = successFiles.map(file => ({
+        name: file.file.name,
+        type: getFileTypeByExtension(file.file.name),
+        serverFileId: file.serverFileId,
+      }));
+
+      const hasChanges = compareFileSets(originalFiles, currentFiles);
+      setHasFileChanges(hasChanges);
+    }
+  }, [files, originalFiles, successFiles]);
+
   // Валидация формы
-  const canGenerate = projectName.trim().length > 0 && fileValidation.isValid;
+  // Для черновиков кнопка генерации активна если есть валидные файлы, для остальных - только при изменениях
+  const canGenerate = projectName.trim().length > 0 && fileValidation.isValid &&
+    (project?.status === "DRAFT" || hasFileChanges);
 
   // Обработчик выбора файлов
   const handleFilesSelected = useCallback(
@@ -198,6 +241,36 @@ export default function EditProjectPage() {
     document.getElementById("file-input-add-more")?.click();
   }, []);
 
+  // Сохранение изменений названия и описания
+  const handleSave = useCallback(async () => {
+    if (!projectId || !hasMetadataChanges) return;
+
+    try {
+      console.log("🔧 Updating project:", {
+        projectId,
+        name: projectName,
+        description: projectDescription,
+      });
+
+      await updateProjectMutation.mutateAsync({
+        projectId: projectId,
+        data: {
+          name: projectName,
+          description: projectDescription,
+        },
+      });
+
+      setHasMetadataChanges(false);
+      addToast({
+        type: "success",
+        title: "Проект обновлен",
+        message: "Название и описание проекта успешно сохранены",
+      });
+    } catch (error) {
+      console.error("Error updating project:", error);
+    }
+  }, [projectId, hasMetadataChanges, projectName, projectDescription, updateProjectMutation, addToast]);
+
   // Генерация
   const handleGenerate = useCallback(async () => {
     if (!canGenerate || !projectId) return;
@@ -293,9 +366,19 @@ export default function EditProjectPage() {
             variant="bordered"
             color="default"
             size="lg"
-            onPress={() => navigate("/dashboard/all")}
+            onPress={() => navigate(`/dashboard/projects/${projectId}`)}
           >
             Отмена
+          </Button>
+          <Button
+            variant="bordered"
+            color="primary"
+            size="lg"
+            isDisabled={!hasMetadataChanges || updateProjectMutation.isPending}
+            onPress={handleSave}
+            isLoading={updateProjectMutation.isPending}
+          >
+            Сохранить
           </Button>
           <Button
             color="primary"
@@ -317,7 +400,7 @@ export default function EditProjectPage() {
           label="Введите название проекта"
           placeholder="Введите название проекта"
           value={projectName}
-          onValueChange={setProjectName}
+          onValueChange={handleNameChange}
           maxLength={50}
           description={`Макс 50 символов`}
           classNames={{
@@ -331,7 +414,7 @@ export default function EditProjectPage() {
           label="Введите описание проекта"
           placeholder="Введите описание проекта"
           value={projectDescription}
-          onValueChange={setProjectDescription}
+          onValueChange={handleDescriptionChange}
           maxLength={250}
           description={`Максимум 250 символов`}
           minRows={4}

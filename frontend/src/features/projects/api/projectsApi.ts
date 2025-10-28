@@ -7,6 +7,7 @@ import type {
   UpdateProjectRequest,
   CreateProjectWithFilesRequest,
   CreateProjectWithFilesResponse,
+  MappingsListResponse,
 } from "../types/projects.types";
 
 const PROJECTS_BASE_URL = "/projects";
@@ -108,5 +109,17 @@ export const createProjectWithFiles = async (
     }
   );
 
+  return response.data;
+};
+
+/**
+ * Получить маппинги проекта
+ */
+export const getProjectMappings = async (
+  projectId: string
+): Promise<MappingsListResponse> => {
+  const response = await apiClient.get<MappingsListResponse>(
+    `${PROJECTS_BASE_URL}/${projectId}/mappings`
+  );
   return response.data;
 };
