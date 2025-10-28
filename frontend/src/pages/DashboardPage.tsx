@@ -8,14 +8,16 @@ import CloudIcon from "@/shared/assets/cloud-text.svg";
 import BellIcon from "@/shared/assets/bell.svg";
 import SettingsIcon from "@/shared/assets/settings.svg";
 import HelpIcon from "@/shared/assets/support.svg";
+import InfoIcon from "@/shared/assets/info.svg";
 import { Button } from "@heroui/button";
 import { Divider, Input } from "@heroui/react";
 import { useUserStore } from "@/store/userStore";
-import { NavLink, Outlet } from "react-router-dom";
+import { NavLink, Outlet, useNavigate } from "react-router-dom";
 
 export default function DashboardPage() {
   const { user } = useUserStore();
   const [searchQuery, setSearchQuery] = useState("");
+  const navigate = useNavigate();
 
   return (
     <div className="min-h-screen flex flex-col bg-linear-to-br from-primary-100 via-default-50 to-secondary-100 dark:from-primary-950 dark:via-background dark:to-secondary-950">
@@ -148,6 +150,15 @@ export default function DashboardPage() {
             </NavLink>
           </div>
           <Divider />
+          <Button
+            startContent={<img src={InfoIcon} alt="" className="w-4 h-4" />}
+            className="pl-3 gap-2 justify-start"
+            variant="light"
+            onPress={() => navigate("/onboarding")}
+          >
+            О приложении
+          </Button>
+
           <Button
             startContent={<img src={SettingsIcon} alt="" className="w-4 h-4" />}
             className="pl-3 gap-2 justify-start"

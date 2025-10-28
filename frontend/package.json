@@ -17,7 +17,7 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "dev:electron": "npx cross-env VITE_BACKEND_LOCAL=false concurrently \"npx cross-env VITE_BACKEND_LOCAL=false yarn dev\" \"wait-on tcp:5173 && npx cross-env VITE_BACKEND_LOCAL=false electron .\"",
-    "dev:electron:local": "concurrently \"npx cross-env VITE_BACKEND_LOCAL=true yarn dev:local\" \"wait-on tcp:5173 && npx cross-env VITE_BACKEND_LOCAL=true electron .\"",
+    "dev:electron:local": "concurrently \"cross-env VITE_BACKEND_LOCAL=true yarn dev:local\" \"bash -c 'until curl -s http://localhost:5173 > /dev/null 2>&1; do sleep 0.5; done' && cross-env VITE_BACKEND_LOCAL=true electron .\"",
     "dev:electron:cloud": "npx cross-env VITE_BACKEND_LOCAL=false concurrently \"npx cross-env VITE_BACKEND_LOCAL=false yarn dev\" \"wait-on tcp:5173 && npx cross-env VITE_BACKEND_LOCAL=false electron .\"",
     "build:electron": "yarn build && electron-builder",
     "build:electron:all": "yarn build && electron-builder --win --mac --linux"

@@ -7,3 +7,5 @@ yarn.lock
 package-lock.json
 venv/
 *.DS_Store
+# Docker образы (создаются локально через export-docker-images.bash)
+docker-images/*.tar

@@ -8,12 +8,16 @@ import {
   ModalBody,
   ModalFooter,
 } from "@heroui/react";
-import { useGetProjectById, useDeleteProject } from "@/features/projects/hooks";
+import {
+  useGetProjectById,
+  useDeleteProject,
+  useGetProjectMappings,
+} from "@/features/projects/hooks";
 import { useGetProjectFiles } from "@/features/files/hooks";
 import { GenerationSuccess } from "@/features/files/components";
 import { downloadFile } from "@/features/files/api/filesApi";
 import { useToastStore } from "@/shared/hooks/useToast";
-import DeleteIcon from "@/shared/assets/delete.svg";
+import TrashIcon from "@/shared/assets/trash.svg";
 
 export default function ProjectViewPage() {
   const { projectId } = useParams<{ projectId: string }>();
@@ -23,6 +27,7 @@ export default function ProjectViewPage() {
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isMappingModalOpen, setIsMappingModalOpen] = useState(false);
 
   // Хук для удаления проекта
   const deleteProjectMutation = useDeleteProject();
@@ -36,6 +41,10 @@ export default function ProjectViewPage() {
 
   // Загрузка файлов проекта
   const { data: projectFiles } = useGetProjectFiles(projectId || null);
+
+  // Загрузка маппингов проекта
+  const { data: mappingsData, isLoading: mappingsLoading } =
+    useGetProjectMappings(projectId || null, project?.status);
 
   // Определяем templateFileId, имя файла и template содержимое
   const { templateFileId, generatedFileName, templateContent } = useMemo(() => {
@@ -174,8 +183,18 @@ export default function ProjectViewPage() {
         <h1 className="text-2xl leading-8 font-semibold">{project.name}</h1>
         <div className="flex items-center gap-2">
           <Button
-            variant="light"
+            variant="solid"
+            color="primary"
+            isDisabled={project?.status === "DRAFT"}
+            title={project?.status === "DRAFT" ? "Маппинг доступен только для завершенных проектов" : "Просмотр маппинга полей"}
+            onPress={() => setIsMappingModalOpen(true)}
+          >
+            Маппинг
+          </Button>
+          <Button
+            variant="solid"
             color="default"
+            className="bg-gray-200 hover:bg-gray-300"
             onPress={() => navigate(`/dashboard/projects/${projectId}/edit`)}
           >
             Редактировать проект
@@ -185,9 +204,9 @@ export default function ProjectViewPage() {
             variant="bordered"
             color="danger"
             onPress={() => setIsDeleteModalOpen(true)}
-            className="w-10 h-10 min-w-10"
+            className="w-10 h-10 min-w-10 bg-pink-100"
           >
-            <img src={DeleteIcon} alt="Удалить проект" className="w-5 h-5" />
+            <img src={TrashIcon} alt="Удалить проект" className="w-5 h-5" />
           </Button>
         </div>
       </div>
@@ -284,6 +303,95 @@ export default function ProjectViewPage() {
               Удалить
             </Button>
           </ModalFooter>
+        </ModalContent>
+      </Modal>
+
+      {/* Модальное окно маппинга */}
+      <Modal
+        isOpen={isMappingModalOpen}
+        onClose={() => setIsMappingModalOpen(false)}
+        size="4xl"
+        scrollBehavior="inside"
+        classNames={{
+          closeButton: "text-2xl w-10 h-10 right-4 top-4",
+        }}
+      >
+        <ModalContent className="rounded-3xl">
+          <ModalHeader className="flex flex-col gap-1">
+            Маппинг полей
+            {mappingsData && (
+              <span className="text-sm font-normal text-default-500">
+                Найдено маппингов: {mappingsData.total}
+              </span>
+            )}
+          </ModalHeader>
+          <ModalBody>
+            {project?.status === "DRAFT" ? (
+              <div className="flex items-center justify-center py-8">
+                <div className="text-center">
+                  <p className="text-warning-600 font-medium mb-2">Маппинг недоступен</p>
+                  <p className="text-default-500 text-sm">
+                    Маппинг полей доступен только для завершенных проектов.<br />
+                    Сначала завершите генерацию проекта.
+                  </p>
+                </div>
+              </div>
+            ) : mappingsLoading ? (
+              <div className="flex items-center justify-center py-8">
+                <p className="text-default-500">Загрузка маппингов...</p>
+              </div>
+            ) : !mappingsData || mappingsData.mappings.length === 0 ? (
+              <div className="flex items-center justify-center py-8">
+                <p className="text-default-500">Маппинги не найдены</p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {mappingsData.mappings.map((mapping) => {
+                  // Извлекаем название из label (до дефиса)
+                  const fieldName = mapping.json_field_label
+                    .split("-")[0]
+                    .trim();
+                  const confidence = Math.round(mapping.confidence_score * 100);
+
+                  // Цветовая индикация уверенности
+                  let confidenceColor = "text-green-600";
+                  let confidenceBg = "bg-green-50";
+                  if (confidence < 40) {
+                    confidenceColor = "text-red-600";
+                    confidenceBg = "bg-red-50";
+                  } else if (confidence < 70) {
+                    confidenceColor = "text-orange-600";
+                    confidenceBg = "bg-orange-50";
+                  }
+
+                  return (
+                    <div
+                      key={mapping.id}
+                      className="flex items-center justify-between p-4 border border-default-200 rounded-2xl hover:border-default-300 transition-colors"
+                    >
+                      <div className="flex-1">
+                        <p className="font-medium text-foreground">
+                          {fieldName}
+                        </p>
+                        <p className="text-sm text-default-500 mt-1">
+                          {mapping.json_field_path} → {mapping.xml_element_path}
+                        </p>
+                      </div>
+                      <div
+                        className={`flex items-center gap-2 px-3 py-1.5 rounded-full ${confidenceBg}`}
+                      >
+                        <span
+                          className={`text-sm font-semibold ${confidenceColor}`}
+                        >
+                          {confidence}%
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </ModalBody>
         </ModalContent>
       </Modal>
     </div>

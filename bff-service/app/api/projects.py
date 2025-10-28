@@ -142,11 +142,57 @@ async def update_project(
     project_update: ProjectUpdate,
     current_user: dict = Depends(get_current_user)
 ):
-    """Обновить проект"""
+    """Обновить проект (с автоматическим версионированием если название существует)"""
+    import re
+
     user_email = current_user.get("email")
+    update_data = project_update.dict(exclude_unset=True)
+
+    # Если обновляется название, проверяем на дубликаты и добавляем версию
+    if "name" in update_data:
+        # Получаем текущий проект, чтобы исключить его из проверки
+        current_project = await projects_service.get_project(project_id)
+        if not current_project:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Project not found"
+            )
+
+        # Проверяем существующие проекты с таким названием и добавляем версию
+        all_projects = await projects_service.get_projects(limit=250)
+        existing_projects = all_projects.get("projects", [])
+
+        # Исключаем текущий проект из проверки
+        existing_projects = [p for p in existing_projects if p.get("id") != project_id]
+
+        # Базовое имя без версии
+        base_name = re.sub(r'\s+\(версия\s+\d+\)$', '', update_data["name"])
+
+        # Находим все проекты с похожим названием
+        matching_projects = []
+        for proj in existing_projects:
+            proj_name = proj.get("name", "")
+            # Проверяем точное совпадение или с версией
+            if proj_name == base_name or re.match(rf'^{re.escape(base_name)}\s+\(версия\s+\d+\)$', proj_name):
+                matching_projects.append(proj_name)
+
+        # Если есть совпадения - добавляем версию
+        if matching_projects:
+            max_version = 1  # Если есть проект без версии, начинаем с версии 2
+
+            for proj_name in matching_projects:
+                # Ищем версию в названии
+                version_match = re.search(r'\(версия\s+(\d+)\)$', proj_name)
+                if version_match:
+                    version = int(version_match.group(1))
+                    max_version = max(max_version, version)
+
+            # Формируем новое название с версией
+            update_data["name"] = f"{base_name} (версия {max_version + 1})"
+
     result = await projects_service.update_project(
         project_id=project_id,
-        update_data=project_update.dict(exclude_unset=True),
+        update_data=update_data,
         user_id=user_email
     )
     return ProjectResponse(**result)

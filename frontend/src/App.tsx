@@ -37,6 +37,9 @@ export default function App() {
         }
       />
 
+      {/* Онбординг доступен всегда для повторного просмотра */}
+      <Route path="/onboarding" element={<OnboardingPage />} />
+
       {/* Страницы аутентификации только в облачном режиме */}
       {!isLocalMode && (
         <>

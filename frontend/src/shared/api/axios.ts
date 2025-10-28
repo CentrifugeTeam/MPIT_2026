@@ -5,7 +5,7 @@ import i18n from "i18next";
 
 const CLOUD_URL =
   (import.meta.env.VITE_API_BASE_URL ||
-    "https://affectedly-optimistic-turkey.cloudpub.ru") + "/api";
+    "https://noiselessly-shipshape-garpike.cloudpub.ru") + "/api";
 const LOCAL_URL = "http://localhost:8000/api";
 
 let BASE_URL =

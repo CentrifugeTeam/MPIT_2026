@@ -46,8 +46,8 @@ function createWindow() {
 
     // В облачном режиме применяем CSP
     if (details.url.includes('localhost:5173')) {
-      const connectSrc = "'self' https://affectedly-optimistic-turkey.cloudpub.ru wss://affectedly-optimistic-turkey.cloudpub.ru ws://localhost:*";
-      const defaultSrc = "'self' https://affectedly-optimistic-turkey.cloudpub.ru";
+      const connectSrc = "'self' https://noiselessly-shipshape-garpike.cloudpub.ru";
+      const defaultSrc = "'self' https://noiselessly-shipshape-garpike.cloudpub.ru";
 
       callback({
         responseHeaders: {
@@ -67,7 +67,7 @@ function createWindow() {
     }
   });
 
-  if (isDev) { //  && !isLocalMode
+  if (isDev && !isLocalMode) { //  && !isLocalMode
     win.webContents.openDevTools();
   }
 

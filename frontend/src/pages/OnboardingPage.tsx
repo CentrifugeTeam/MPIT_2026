@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@heroui/react";
 import LoginGradient from "@/shared/assets/login-gradient.png";
 import { isLocalMode } from "@/shared/config/env";
@@ -39,11 +39,22 @@ const ONBOARDING_STEPS = [
 export default function OnboardingPage() {
   const [currentStep, setCurrentStep] = useState(0);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Проверяем, открыт ли онбординг повторно (через /onboarding)
+  const isRevisit = location.pathname === "/onboarding";
 
   const handleClose = () => {
     // Сохраняем флаг, что онбординг просмотрен
     localStorage.setItem("onboarding_completed", "true");
-    // Перенаправляем в зависимости от режима работы
+
+    // Если это повторный просмотр, возвращаемся на дашборд
+    if (isRevisit) {
+      navigate("/dashboard");
+      return;
+    }
+
+    // При первом просмотре перенаправляем в зависимости от режима работы
     if (isLocalMode) {
       // В локальном режиме сразу на дашборд
       navigate("/dashboard");
